@@ -1,4 +1,4 @@
-# springmvc
+# SpringMVC_HTTP
 
 SpringBoot 기반으로 공부용 입니다.
 > 로깅의 필요성과 사용 방법, Spring MVC의 기본 기능인 HTTP 요청, 응답 메시지 처리를 알아보는 '공부용'입니다.
@@ -72,5 +72,33 @@ SpringBoot 기반으로 공부용 입니다.
 > 2. 로그 레벨에 따라 개발 서버에서는 모든 로그를 출력하고, 운영 서버에서는 출력하지 않게 상황에 따라 조절 가능
 > 3. 시스템 아웃 콘솔에만 출력하는 것이 아니라 파일, 네트워크 등 별도의 위치에 남길 수 있다.
 > 4. 성능도 System.out보다 좋다.(내부 버퍼링, 멀티 쓰레드 등) -> 수 십배의 속도 차이가 날 수 있다.
+>
+>
+> ![image](https://user-images.githubusercontent.com/69206748/145672768-48d2e378-a889-4cfb-8790-d5f4b8c119b4.png)
+>
+> * PathVariable(경로 변수)사용
+>
+> 만일 @PathVariable의 이름과 Parameter의 이름이 같으면 생략할 수 있다.
+>
+> 최근 HTTP API는 다음과 같이 리소스 경로에 식별자를 넣는 스타일을 선호한다.
+>
+> /mapping/{userId}/orders/{orderId}
 > 
+> * 요청 매핑 - API 예시
+> 회원 관리를 HTTP API로 만든다고 하면 다음과 같이 만들 수 있다.
+>
+> 1. 회원 목록 조회 : GET /users
+> 2. 회원 등록 : POST /users
+> 3. 회원 조회 : GET /users/{userId}
+> 4. 회원 수정 : PATCH /users/{userId}
+> 5. 회원 삭제 : DELETE /users/{userId}
+> 
+> 회원 조회 Controller를 만든다면 다음과 같이 만들 수 있다.
+> (Class Level에 @RequestMapping("/mapping/users") 선언하여 경로 통합)
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145672959-3f76887e-a127-4ad9-b2db-c397d67181e8.png)
+>
+>
+***2021/12/11***
+> * 
 >
