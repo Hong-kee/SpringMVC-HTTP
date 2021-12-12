@@ -119,7 +119,8 @@ SpringBoot 기반으로 공부용 입니다.
 > 2. 데이터 형식은 주롤 JSON을 사용한다.
 > 3. POST, PUT, PATCH를 사용할 수 있다.
 >
-> ** 요청 파라미터 - 쿼리 파라미터, HTML Form **
+> * 요청 파라미터 - 쿼리 파라미터, HTML Form
+>
 > HttpServletRequest의 request.getParameter()를 사용하면 GET-쿼리 파라미터, POST, HTML Form 전송에서 Parameter를 뽑아낼 수 있다.
 >
 > ![image](https://user-images.githubusercontent.com/69206748/145712278-b5ac1d2b-f34f-4dc7-81fd-ad5219ee561b.png)
