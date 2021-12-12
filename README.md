@@ -125,4 +125,12 @@ SpringBoot 기반으로 공부용 입니다.
 >
 > ![image](https://user-images.githubusercontent.com/69206748/145712278-b5ac1d2b-f34f-4dc7-81fd-ad5219ee561b.png)
 >
+> * HTTP 요청 파라미터 - @RequestParam
+>
+> 스프링이 제공하는 @RequestParam을 이용하면 파라미터 이름으로 바인딩을 해준다.
+>
+> ![image](https://user-images.githubusercontent.com/69206748/145714833-e77988a2-e8f4-4a01-a08a-79c27dd17784.png)
+>
+>
+***2021/12/12***
 >
