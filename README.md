@@ -133,4 +133,41 @@ SpringBoot 기반으로 공부용 입니다.
 >
 >
 ***2021/12/12***
+> * HTTP 요청 파라미터 - @ModelAttribute
+> 
+> 실제 개발을 하면 요청 파라미터를 받아서 필요한 객체를 만들고 그 객체에 값을 넣어주어야 한다.
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145755801-60a8a87b-e1f1-4d98-b520-62fab35382d8.png)
 >
+> 스프링은 다음과 같은 과정을 자동화해주는 @ModelAttribute 기능을 제공한다.
+>
+> 우선 요청 파라미터를 바인딩 받을 객체 HelloData를 생성하자.
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145755917-51fac123-bb65-433e-aab9-230a6f56deb2.png)
+>
+> ![image](https://user-images.githubusercontent.com/69206748/145756171-fce961b8-2a9e-4131-af3b-c1b308752c31.png)
+>
+> @ModelAttribute가 있으면 다음과 같이 실행된다.
+> 1. HelloData 객체를 생성한다.
+> 2. 요청 파라미터의 이름으로 HelloData 객체의 프로퍼티를 찾는다. 그리고 해당 프로퍼티의 setter를 호출하여 파라미터 값을 바인딩한다.
+>
+>
+> 물론 @ModelAttribute를 생략할 수 있지만 @RequestParam과 혼란을 야기할 수 있기 때문에 추천하는 방법은 아니다.
+>
+> 스프링은 생략시 다음과 같은 규칙을 적용한다고 알려져 있다.
+>
+> 1. String, int, Integer 같은 단순 타입 = @RequestParam
+> 2. 나머지 = @ModelAttribute(argument resolver로 지정해둔 타입 외)
+>
+***2021/12/13***
+> * HTTP 요청 파라미터 - 단순 텍스트
+> 
+> HTTP message body에 데이터를 직접 담아서 요청
+> 
+> 1. HTTP API에서 주로 사용, JSON, XML, TEXT 등
+> 2. 데이터 형식은 주로 JSON 사용
+> 3. POST, PUT, PATCH
+>
+> 이 때 주의해야할 점은 요청 파라미터와는 다르게, HTTP message body를 통해 데이터가 직접 넘어오는 경우는 @RequestParam, @ModelAttribute를 사용할 수 없다. 물론 HTML Form형식으로 넘어오는 경우는 message body에 요청 파라미터가 있기 때문에 사용 가능하다.
+> 
+> 
