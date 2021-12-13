@@ -170,4 +170,76 @@ SpringBoot 기반으로 공부용 입니다.
 >
 > 이 때 주의해야할 점은 요청 파라미터와는 다르게, HTTP message body를 통해 데이터가 직접 넘어오는 경우는 @RequestParam, @ModelAttribute를 사용할 수 없다. 물론 HTML Form형식으로 넘어오는 경우는 message body에 요청 파라미터가 있기 때문에 사용 가능하다.
 > 
+> 가장 단순한 텍스트 메시지를 HTTP message body에 담아서 전송하고 읽어보자. HTTP message body의 데이터를 InputStream을 사용하여 읽을 수 있다. 또한 InputStream(Reader), OutputStream(Writer)를 사용하여 HTTP 요청 메시지 바디를 직접 조회, HTTP 응답 메시지 바디에 직접 결과 출력을 할 수 있다.
+>
+>
+> ![image](https://user-images.githubusercontent.com/69206748/145760372-756cdcc6-c925-43a8-94b8-e6c0c4eb90ab.png)
+>
+> * HttpEntity
 > 
+> ![image](https://user-images.githubusercontent.com/69206748/145760646-d61cfcd9-5ad5-463d-949f-c35b01be40fb.png)
+>
+> HttpEntity : HTTP header, body 정보를 편리하게 조회할 수 있다.
+> 1. message body 정보를 직접 조회(요청 파라미터와 관련 없으므로 @RequestParam X, @ModelAttribute X)
+> 2. HttpMessageConverter 사용 -> StringHttpMessageConverter를 적용한다.
+> 
+> 응답에서도 HttpEntity 사용 가능
+> 1. message body 정보 직접 반환(view 조회X)
+> 2. HttpMessageConverter 사용 -> StringMessageConverter를 적용한다.
+>
+> ![image](https://user-images.githubusercontent.com/69206748/145761076-0b38634b-ebfc-423c-b85f-4fe4919500ec.png)
+> 
+> @RequestBody
+> 1. message body 정보를 직접 조회(요청 파라미터와 관련 없으므로 @RequestParam X, @ModelAttribute X)
+> 2. HttpMessageConverter 사용 -> StringHttpMessageConverter를 적용한다.
+> 3. 만일 헤더 정보가 필요하다면 HttpEntity를 사용하거나 @RequestHeader를 사용하면 된다. 
+>
+> @ResponseBody
+> 1. message body 정보 직접 반환(view 조회X)
+> 2. HttpMessageConverter 사용 -> StringMessageConverter를 적용한다.
+>
+> 요청 파라미터 vs HTTP Message body
+> 1. 요청 파라미터를 조회하는 기능 : @RequestParam, @ModelAttribute
+> 2. HTTP Message body를 직접 조회하는 기능 : @RequestBody
+> 
+> * HTTP 요청 메시지 - JSON
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145761597-f614e8fc-8a19-4a59-99c6-6ec760c8a3fd.png)
+>
+> 1. HttpServletRequest를 사용해서 직접 HTTP Message body에서 데이터를 읽어와 문자로 변환한다.
+> 2. 문자로된 JSON Data를 Jackson 라이브러리인 objectMapper를 사용해서 자바 객체로 변환한다.
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145762346-b17ae68f-0b0f-480b-878b-bf7ff6aea53a.png)
+>
+> 1. @RequestBody를 사용해서 HTTP Message에서 데이터를 꺼내서 message body에 저장한다.
+> 2. 문자로된 JSON Data를 Jackson 라이브러리인 objectMapper를 사용해서 자바 객체로 변환한다.
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145762559-c5861ef9-ca84-4d2c-abb0-a25d3636f7e0.png)
+>
+> 1. @RequestBody 요청 : JSON 요청 -> HTTP Message Converter -> 객체
+> 2. @ResponseBody 응답 : 객체 -> HTTP Message Converter -> JSON 응답
+> 
+> * ResponseViewController - 뷰 템플릿을 호출하는 컨트롤러
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145762936-6080115c-36ea-4ee5-b909-0569d7f9a839.png)
+>
+> String을 반환하는 경우 - View or HTTP Message
+> -@ResponseBody가 없으면 response/hello로 뷰 리졸버가 실행되어서 뷰를 찾고, 렌더링한다.
+> -@ResponseBody가 있으면 뷰 리졸버가 실행되지 않고, HTTP Message body에 직접 response/hello라는 문자가 입력된다. 여기서 뷰의 논리 이름인 response/hello를 반환하면 다음 경로의 뷰 템플릿이 렌더링 되는 것을 확인할 수 있다. (template/response/hello.html)
+> 
+>
+> * HTTP 응답 - HTTP API, Message body에 직접 입력
+> 
+> HTTP API를 제공하는 경우 HTML이 아니라 데이터를 전달해야 하므로, HTTP Message body에 JSON같은 형식으로 데이터를 실어 보낸다.
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145763471-c17dbca1-a6ce-450f-8682-aaf5a7c1c00e.png)
+>
+> 1. responseBodyV1 : Servlet를 다룰 때 처럼 HttpServletResponse 객체를 통해 HTTP Message body에 직접 ok응답을 전달한다.
+> 2. responseBodyV2 : ResponseEntity는 HttpEntity를 상속 받았는데 추가로 HTTP Status Code를 설정할 수 있다.
+> 3. responseBodyV3 : @ResponseBody를 사용하면 view를 거치지 않고, HttpMessageConverter를 통해 HTTP Message를 직접 입력할 수 있다.
+> 4. responseBodyJsonV1 : ResponseEntity를 반환한다. HTTPMessageConverter를 통해서 JSON 형식으로 변환되어 반환된다.
+> 5. responseBodyJsonV2 : ResponseEntity는 HTTP Status를 설정할 수 있는데 @ResponseBody를 사용하면 설정하기 까다롭다. 따라서 @ResponseStatus(HttpStatus.OK)를 사용하면 손 쉽게 Status도 설정할 수 있다.
+> 
+> * @RestController
+> 
+> @Controller 대신에 @RestController를 사용하면, 해당 컨트롤러에 모두 @ResponseBody가 적용되는 효과가 있다. 따라서 뷰 템플릿을 사용하는 것이 아니라 HTTP Message body에 직접 데이터를 입력한다. Rest API를 만들 때 사용하는 컨트롤러이다. 참고로 @ResponseBody는 클래스 레벨에 두면 전체 메서드에 적용되는데, @RestController 안에 @ResponseBody가 적용되어 있다. (@RestController = @ResponseBody + @Controller)
