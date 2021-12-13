@@ -100,5 +100,37 @@ SpringBoot 기반으로 공부용 입니다.
 >
 >
 ***2021/12/11***
-> * 
+> * HTTP 요청 파라미터 - 쿼리 파라미터, HTML Form
+>
+> 클라이언트에서 서버로 요청 데이터를 전달할 때는 주로 3가지 방법을 사용한다.
+> 
+> * GET - 쿼리 파라미터
+> 1. /url?username=hello&age=20
+> 2. Message Body 없이, URL의 쿼리 파라미터에 데이터를 포함해서 전달한다.
+> 3. ex) 검색, 필터, 페이징에서 많이 사용하는 방식이다.
+> 
+> * POST - HTML Form
+> 1. content-type:application/x-www-form-urlencoded
+> 2. Message Body에 쿼리 파라미터 형식으로 전달한다. username=hello&age=20
+> 3. ex) 회원 가입, 상품 주문에서 많이 사용하는 방식이다.
+>
+> * HTTP Message Body에 데이터를 직접 담아서 요청
+> 1. HTTP API에서 주로 사용(JSON, XML, TEXT)
+> 2. 데이터 형식은 주롤 JSON을 사용한다.
+> 3. POST, PUT, PATCH를 사용할 수 있다.
+>
+> * 요청 파라미터 - 쿼리 파라미터, HTML Form
+>
+> HttpServletRequest의 request.getParameter()를 사용하면 GET-쿼리 파라미터, POST, HTML Form 전송에서 Parameter를 뽑아낼 수 있다.
+>
+> ![image](https://user-images.githubusercontent.com/69206748/145712278-b5ac1d2b-f34f-4dc7-81fd-ad5219ee561b.png)
+>
+> * HTTP 요청 파라미터 - @RequestParam
+>
+> 스프링이 제공하는 @RequestParam을 이용하면 파라미터 이름으로 바인딩을 해준다.
+>
+> ![image](https://user-images.githubusercontent.com/69206748/145714833-e77988a2-e8f4-4a01-a08a-79c27dd17784.png)
+>
+>
+***2021/12/12***
 >
