@@ -1,4 +1,4 @@
-# SpringMVC_HTTP
+# SpringMVC-HTTP
 
 SpringBoot 기반으로 공부용 입니다.
 > 로깅의 필요성과 사용 방법, Spring MVC의 기본 기능인 HTTP 요청, 응답 메시지 처리를 알아보는 '공부용'입니다.
