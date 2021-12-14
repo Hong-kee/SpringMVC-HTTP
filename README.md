@@ -23,7 +23,7 @@ SpringBoot 기반으로 공부용 입니다.
 
 > Start : ***2021/12/10~***
 > 
-> End : ***~ing***
+> End : ***2021/12/14***
 
 ***2021/12/10***
 > * Logging
@@ -243,3 +243,88 @@ SpringBoot 기반으로 공부용 입니다.
 > * @RestController
 > 
 > @Controller 대신에 @RestController를 사용하면, 해당 컨트롤러에 모두 @ResponseBody가 적용되는 효과가 있다. 따라서 뷰 템플릿을 사용하는 것이 아니라 HTTP Message body에 직접 데이터를 입력한다. Rest API를 만들 때 사용하는 컨트롤러이다. 참고로 @ResponseBody는 클래스 레벨에 두면 전체 메서드에 적용되는데, @RestController 안에 @ResponseBody가 적용되어 있다. (@RestController = @ResponseBody + @Controller)
+> 
+>
+***2021/12/14***
+>
+> * HTTP 메시지 컨버터
+> 
+> 뷰 템플릿으로 HTML을 생성해서 응답하는 것이 아니라, HTTP API처럼 JSON 데이터를 HTTP 메시지 바디에서 직접 읽거나 쓰는 경우 HTTP 메시지 컨버터를 쓰면 편리하다.
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145984377-0de6042f-7119-4f3f-9dcc-327a385d4920.png)
+>
+> @ResponseBody - 복습
+> 1. HTTP의 BODY에 문자 내용을 직접 반환한다.
+> 2. viewResolver 대신에 HttpMessageConverter가 동작한다.
+> 3. 기본 문자 처리 : StringHttpMessageConverter / 기본 객체 처리 : MappingJackson2HttpMessageConverter가 동작한다.
+> 4. byte처리 등 기타 여러 HttpMessageConverter가 기본으로 등록되어 있다.
+> 
+> * HTTP 메시지 컨버터는 HTTP 요청, HTTP 응답 둘 다 사용된다.
+> 1. canRead(), canWrite() : 메시지 컨버터가 해당 클래스, 미디어 타입을 지원하는지 체크한다.
+> 2. read(), write() : 메시지 컨버터를 통해 메시지를 읽고 쓰는 기능을 하는 메서드이다.
+> 
+> * 스프링부트 기본 메시지 컨버터 (우선 순위 존재, 0이 제일 큰 우선 순위를 갖는다.)
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145985639-84b5ee51-1070-4bbc-b528-13f11228afbe.png)
+> 
+> 메시지 컨버터는 클래스 타입과 미디어 타입 둘 다 체크해서 사용할지 말지를 결정한다. 만일 만족하지 않으면 다음 우선 순위로 넘어간다.
+>
+> * ByteArrayHttpMessageConverter : byte[] 데이터를 처리한다.
+> 1. 클래스 타입 : byte[], 미디어 타입 : */* (모든 타입 처리 가능)
+> 2. 요청 예) @RequestBody byte[] data / 응답 예) @ResponseBody return byte[], 쓰기 미디어 타입 : application/octet-stream
+> 
+> * StringHttpMessageConverter : String 문자로 데이터를 처리한다.
+> 1. 클래스 타입 : String, 미디어 타입 : */* (모든 타입 처리 가능)
+> 2. 요청 예) @RequestBody String data / 응답 예) @ResponseBody return "ok", 쓰기 미디어 타입 : text/plain
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145986819-89d9240a-0f33-4268-8a47-708252a3ed6a.png)
+>
+> * MappingJackson2HttpMessageConverter : application/json
+> 1. 클래스 타입 : 객체 또는 HashMap, 미디어 타입 : application/json 관련
+> 2. 요청 예) @RequestBody HelloData data / 응답 예) @ResponseBody return helloData, 쓰기 미디어 타입 : application/json 관련
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145986895-9aa2b9e1-fc21-4b36-ae74-e04d34c10112.png)
+>
+> * HTTP 요청 데이터 읽기
+> 1. HTTP 요청이 오고, 컨트롤러에서 @RequestBody, HttpEntity 파라미터를 사용한다.
+> 2. 메시지 컨버터가 메시지를 읽을 수 있는지 확인하기 위해 canRead()를 호출한다. (대상 클래스 타입을 지원하는가? Content-type을 지원하는가?)
+> 3. canRead() 조건을 만족하면 read()를 호출해서 객체 생성 후 반환한다.
+> 
+> * HTTP 응답 데이터 생성
+> 1. 컨트롤러에서 @ResponseBody, HttpEntity로 값이 반환된다.
+> 2. 메시지 컨버터가 메시지를 쓸 수 있는지 확인하기 위해 canWrite()를 호출한다. (대상 클래스 타입을 지원하는가? Content-type을 지원하는가?)
+> 3. canWrite() 조건을 만족하면 write()를 호출해서 HTTP 응답 메시지 바디에 데이터를 생성한다.
+> 
+> * 요청 매핑 핸들러 어댑터 구조 (RequestMappingHandlerAdapter)
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145988387-8e32ab36-84bc-44cf-a106-d9d16bc6c83c.png)
+> 
+> * ArgumentResolver
+> 
+> 지금까지 애노테이션 기반 컨트롤러를 사용하면서 다양한 파라미터를 사용할 수 있었다.(HttpServletRequest, Model, @RequestParam, @ModelAttribute, @RequestBody, HttpEntity 등)
+>
+> 이렇게 다양한 파라미터를 사용할 수 있었던 이유는 ArgumentResolver 덕분이다.
+> 애노테이션 기반 컨트롤러를 처리하는 RequestMappingHandlerAdapter는 ArgumentResolver를 호출해서 컨트롤러(핸들러)가 필요로 하는 다양한 파라미터의 값(객체)을 생성한다. 그리고 파라미터의 값이 모두 준비되면 컨트롤러를 호출하며 값을 리턴한다. 스프링은 30개가 넘는 ArgumentResolver를 기본으로 제공한다.
+> 
+> * ArgumentResolver의 동작 방식 - 인터페이스라 OCP를 만족하며 설계되어 있다.
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145989173-352e0ba2-274c-4d4b-b68b-29830a19e3c5.png)
+>
+> 1. ArgumentResolver의 supportsParameter()를 호출하여 해당 파라미터를 지원하는지 체크한다.
+> 2. 지원하면 resolveArgument()를 호출하여 실제 객체를 생성한다. 그리고 생성된 객체가 컨트롤러 호출 시 넘어간다.
+> 
+> * ReturnValueHandler
+> 
+> ArgumentResolver와 비슷하게 동작하고 응답 값을 변환하고 처리한다.
+>
+> * HTTP 메시지 컨버터
+> 
+> ![image](https://user-images.githubusercontent.com/69206748/145989745-2f13df4b-02c0-4061-9960-38b1c5d284c1.png)
+>
+> **요청의 경우**
+>
+> @RequestBody를 처리하는 ArgumentResolver가 있고, HttpEntity를 처리하는 ArgumentResolver가 있다. 이 ArgumentResolver들이 HTTP 메시지 컨버터를 사용해서 필요한 객체를 생성하는 것이다.
+> 
+> **응답의 경우**
+>
+> @ResponseBody와 HttpEntity를 처리하는 ReturnValueHandler가 있다. 그리고 여기에 HTTP 메시지 컨버터를 호출해서 응답 결과를 만든다.
